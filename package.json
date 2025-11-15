@@ -1,16 +1,30 @@
 {
   "name": "jsdice",
   "version": "1.0.0",
-  "description": "",
+  "description": "A powerful and flexible TypeScript library for simulating dice rolls, inspired by Discord bots like 'Rollem'.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "jest"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "dice",
+    "roll",
+    "ttrpg",
+    "roller",
+    "typescript",
+    "random"
+  ],
+  "author": "Cássio Rodolfo Alves de Carvalho Pinto",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cassracp/jsdice.git"
+  },
   "type": "commonjs",
   "devDependencies": {
     "@types/jest": "^30.0.0",
