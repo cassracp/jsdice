@@ -106,6 +106,7 @@ Modifiers are appended to a standard `XdY` roll (e.g., `4d6`).
 | `!>=` | **Conditional Explode** | `5d10!>=8` | Rolls 5d10. Any die that is 8 or higher explodes. |
 | `L` | **Limit (Explode)** | `3d6!L1` | Each die can only explode a maximum of 1 time. |
 | `+`/`-` | **Modifier** | `1d20+5` | Adds or subtracts a flat number from the total. |
+| `*` | **Multiplication** | `3d6*10` | Multiplies the final total by a given factor. |
 
 ---
 
@@ -186,3 +187,4 @@ Os modificadores são adicionados a uma rolagem padrão `XdY` (ex: `4d6`).
 | `!>=` | **Explosão Condicional** | `5d10!>=8` | Rola 5d10. Qualquer dado com resultado 8 ou maior explode. |
 | `L` | **Limite (Explosão)** | `3d6!L1` | Cada dado pode explodir no máximo 1 vez. |
 | `+`/`-` | **Modificador** | `1d20+5` | Adiciona ou subtrai um número fixo do total. |
+| `*` | **Multiplicação** | `3d6*10` | Multiplica o total final por um dado fator. |

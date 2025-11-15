@@ -37,11 +37,11 @@ describe('roll', () => {
 
   // Test error handling
   test('should throw an error for invalid notation', () => {
-    expect(() => roll('invalid')).toThrow('Invalid dice notation: "invalid". Expected format like "4d6r<2!>5kh3+5".');
+    expect(() => roll('invalid')).toThrow('Invalid dice notation: "invalid". Expected format like "4d6r<2!>5kh3+5*2".');
   });
 
   test('should throw an error for invalid part of a compound roll', () => {
-    expect(() => roll('1d6, invalid')).toThrow('Invalid dice notation: "invalid". Expected format like "4d6r<2!>5kh3+5".');
+    expect(() => roll('1d6, invalid')).toThrow('Invalid dice notation: "invalid". Expected format like "4d6r<2!>5kh3+5*2".');
   });
 
   test('should throw an error for zero dice', () => {
@@ -276,6 +276,63 @@ describe('roll', () => {
 
     test('should throw an error for incomplete explosion syntax', () => {
       expect(() => roll('4d6!L')).toThrow();
+    });
+  });
+
+  describe('multiplication operator (*)', () => {
+    let randomSpy: jest.SpyInstance;
+
+    afterEach(() => {
+      if (randomSpy) {
+        randomSpy.mockRestore();
+      }
+    });
+
+    test('should multiply the total by a positive factor', () => {
+      randomSpy = jest.spyOn(Math, 'random')
+        .mockReturnValueOnce(0.49); // Rolls a 3 on a d6
+
+      const result = roll('1d6*10')[0];
+      expect(result.rolls).toEqual([3]);
+      expect(result.total).toBe(3 * 10);
+    });
+
+    test('should multiply the total including modifiers', () => {
+      randomSpy = jest.spyOn(Math, 'random')
+        .mockReturnValueOnce(0.49); // Rolls a 3 on a d6
+
+      const result = roll('1d6+5*2')[0];
+      expect(result.rolls).toEqual([3]);
+      expect(result.total).toBe((3 + 5) * 2);
+    });
+
+    test('should multiply the total after keep/drop operations', () => {
+      randomSpy = jest.spyOn(Math, 'random')
+        .mockReturnValueOnce(0.05) // 1
+        .mockReturnValueOnce(0.75) // 5
+        .mockReturnValueOnce(0.49); // 3
+
+      const result = roll('3d6kh1*5')[0]; // Rolls 1, 5, 3. Keeps 5. Total 5 * 5 = 25
+      expect(result.rolls).toEqual([5]);
+      expect(result.total).toBe(5 * 5);
+    });
+
+    test('should result in 0 when multiplying by 0', () => {
+      randomSpy = jest.spyOn(Math, 'random')
+        .mockReturnValueOnce(0.49); // Rolls a 3 on a d6
+
+      const result = roll('1d6*0')[0];
+      expect(result.rolls).toEqual([3]);
+      expect(result.total).toBe(0);
+    });
+
+    test('should not change the total when multiplying by 1', () => {
+      randomSpy = jest.spyOn(Math, 'random')
+        .mockReturnValueOnce(0.49); // Rolls a 3 on a d6
+
+      const result = roll('1d6*1')[0];
+      expect(result.rolls).toEqual([3]);
+      expect(result.total).toBe(3);
     });
   });
 });

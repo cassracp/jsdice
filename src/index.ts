@@ -32,10 +32,10 @@ function evaluateSingleRoll(notation: string): RollResult {
   const GLOBAL_DICE_LIMIT = 1000;
   const MAX_EXPLOSIONS_PER_DIE = 100; // Hard cap to prevent true infinite loops
 
-  // Regex: 1:numDice, 2:numSides, 3:reroll, 5:explode, 8:keep/drop full, 9:keep/drop op, 10:keep/drop count, 11:modifier
-  const match = notation.match(/^(\d+)d(\d+)(r(?:[<>=]=?)?\d+(L\d+)?)?(!(?:[<>=]=?)?\d*(L\d+)?)?((kh|kl|dh|dl)(\d+))?\s*([+-]\s*\d+)?$/i);
+  // Regex: 1:numDice, 2:numSides, 3:reroll, 5:explode, 8:keep/drop full, 9:keep/drop op, 10:keep/drop count, 11:modifier, 12:multiplication factor
+  const match = notation.match(/^(\d+)d(\d+)(r(?:[<>=]=?)?\d+(L\d+)?)?(!(?:[<>=]=?)?\d*(L\d+)?)?((kh|kl|dh|dl)(\d+))?\s*([+-]\s*\d+)?(?:\*(\d+))?$/i);
   if (!match) {
-    throw new Error(`Invalid dice notation: "${notation}". Expected format like "4d6r<2!>5kh3+5".`);
+    throw new Error(`Invalid dice notation: "${notation}". Expected format like "4d6r<2!>5kh3+5*2".`);
   }
 
   const numDice = parseInt(match[1], 10);
@@ -48,6 +48,9 @@ function evaluateSingleRoll(notation: string): RollResult {
   
   const modifierString = match[10] ? match[10].replace(/\s/g, '') : null;
   const modifier = modifierString ? parseInt(modifierString, 10) : 0;
+
+  const multiplicationFactorString = match[11];
+  const multiplicationFactor = multiplicationFactorString ? parseInt(multiplicationFactorString, 10) : 1;
 
   if (numDice <= 0 || numSides <= 0) {
     throw new Error('Number of dice and number of sides must be positive.');
@@ -157,7 +160,7 @@ function evaluateSingleRoll(notation: string): RollResult {
 
   return {
     notation: notation,
-    total: total + modifier,
+    total: (total + modifier) * multiplicationFactor,
     rolls: finalRolls,
   };
 }
