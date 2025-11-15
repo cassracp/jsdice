@@ -1,6 +1,6 @@
 {
   "name": "@cassracp/jsdice",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A powerful and flexible TypeScript library for simulating dice rolls, inspired by Discord bots like 'Rollem'.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

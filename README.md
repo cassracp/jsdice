@@ -44,9 +44,7 @@ npm install @cassracp/jsdice
 The library exports two main functions: `roll` and `countSuccesses`.
 
 ```typescript
-import { roll, countSuccesses } from 'jsdice';
-
-// Get the total of a complex roll
+import { roll, countSuccesses } from '@cassracp/jsdice';
 const results = roll('4d6kh3!+5');
 const firstResult = results[0];
 console.log(`Rolled [${firstResult.rolls.join(', ')}] for a total of ${firstResult.total}`);
@@ -124,7 +122,7 @@ npm install @cassracp/jsdice
 A biblioteca exporta duas funções principais: `roll` e `countSuccesses`.
 
 ```typescript
-import { roll, countSuccesses } from 'jsdice';
+import { roll, countSuccesses } from '@cassracp/jsdice';
 
 // Obter o total de uma rolagem complexa
 const results = roll('4d6kh3!+5');
