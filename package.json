@@ -1,5 +1,5 @@
 {
-  "name": "jsdice",
+  "name": "@cassracp/jsdice",
   "version": "1.0.0",
   "description": "A powerful and flexible TypeScript library for simulating dice rolls, inspired by Discord bots like 'Rollem'.",
   "main": "dist/index.js",
@@ -19,7 +19,7 @@
     "typescript",
     "random"
   ],
-  "author": "Cássio Rodolfo Alves de Carvalho Pinto",
+  "author": "cassracp",
   "license": "MIT",
   "repository": {
     "type": "git",
