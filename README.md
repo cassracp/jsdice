@@ -36,9 +36,8 @@ Uma biblioteca TypyScript poderosa e flexível para simulação de rolagem de da
 ### Installation
 
 ```bash
-npm install jsdice
+npm install @cassracp/jsdice
 ```
-*(Note: This package is not yet published to npm. This is the command you would use if it were.)*
 
 ### Basic Usage
 
@@ -117,9 +116,8 @@ Modifiers are appended to a standard `XdY` roll (e.g., `4d6`).
 ### Instalação
 
 ```bash
-npm install jsdice
+npm install @cassracp/jsdice
 ```
-*(Observação: este pacote ainda não foi publicado no npm. Este é o comando que você usaria se estivesse.)*
 
 ### Uso Básico
 
