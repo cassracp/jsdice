@@ -335,6 +335,26 @@ describe('roll', () => {
       expect(result.total).toBe(3);
     });
   });
+
+  describe('compound evaluations (soma/subtracao de dados)', () => {
+    test('should evaluate sum of multiple dice notations correctly', () => {
+      const result = roll('1d1+2d1')[0]; // Determinístico: 1 + 2 = 3
+      expect(result.total).toBe(3);
+      expect(result.rolls).toEqual([1, 1, 1]);
+    });
+
+    test('should evaluate subtraction of dice notations correctly', () => {
+      const result = roll('3d1 - 1d1')[0]; // Determinístico: 3 - 1 = 2
+      expect(result.total).toBe(2);
+      expect(result.rolls).toEqual([1, 1, 1, 1]);
+    });
+
+    test('should combine dice notations and constant numbers', () => {
+      const result = roll('2d1 + 5 - 1d1')[0]; // Determinístico: 2 + 5 - 1 = 6
+      expect(result.total).toBe(6);
+      expect(result.rolls).toEqual([1, 1, 1]);
+    });
+  });
 });
 
 describe('countSuccesses', () => {

@@ -20,7 +20,54 @@ export interface RollResult {
  */
 export function roll(notation: string): RollResult[] {
   const expressions = notation.split(',').map(expr => expr.trim());
-  return expressions.map(expr => evaluateSingleRoll(expr));
+  return expressions.map(expr => evaluateRollExpression(expr));
+}
+
+/**
+ * Evaluates a roll expression, supporting compound expressions (e.g. "1d10 + 2d6 + 5").
+ */
+function evaluateRollExpression(notation: string): RollResult {
+  // Regex to check if there are multiple dice notations in the expression
+  const diceCount = (notation.match(/\d+d\d+/gi) || []).length;
+  
+  if (diceCount <= 1) {
+    // Maintain backward compatibility for single-term rolls (which may have modifiers/multipliers at the end)
+    return evaluateSingleRoll(notation);
+  }
+
+  // Parse compound terms: matching signs (+/-) followed by a dice notation or a plain number
+  const termRegex = /([+-]?)\s*(\d+d\d+[^\s+-]*|\d+)/gi;
+  let match;
+  let total = 0;
+  const allRolls: number[] = [];
+
+  while ((match = termRegex.exec(notation)) !== null) {
+    const sign = match[1] || '+';
+    const term = match[2];
+
+    if (term.includes('d')) {
+      const subResult = evaluateSingleRoll(term);
+      if (sign === '-') {
+        total -= subResult.total;
+      } else {
+        total += subResult.total;
+      }
+      allRolls.push(...subResult.rolls);
+    } else {
+      const val = parseInt(term, 10);
+      if (sign === '-') {
+        total -= val;
+      } else {
+        total += val;
+      }
+    }
+  }
+
+  return {
+    notation: notation,
+    total: total,
+    rolls: allRolls
+  };
 }
 
 /**
