@@ -37,11 +37,11 @@ describe('roll', () => {
 
   // Test error handling
   test('should throw an error for invalid notation', () => {
-    expect(() => roll('invalid')).toThrow('Invalid dice notation: "invalid". Expected format like "4d6r<2!>5kh3+5*2".');
+    expect(() => roll('invalid')).toThrow('Invalid mathematical expression after dice substitution: "invalid"');
   });
 
   test('should throw an error for invalid part of a compound roll', () => {
-    expect(() => roll('1d6, invalid')).toThrow('Invalid dice notation: "invalid". Expected format like "4d6r<2!>5kh3+5*2".');
+    expect(() => roll('1d6, invalid')).toThrow('Invalid mathematical expression after dice substitution: "invalid"');
   });
 
   test('should throw an error for zero dice', () => {
@@ -297,13 +297,13 @@ describe('roll', () => {
       expect(result.total).toBe(3 * 10);
     });
 
-    test('should multiply the total including modifiers', () => {
+    test('should multiply the total honoring standard mathematical order (PEMDAS)', () => {
       randomSpy = jest.spyOn(Math, 'random')
         .mockReturnValueOnce(0.49); // Rolls a 3 on a d6
 
       const result = roll('1d6+5*2')[0];
       expect(result.rolls).toEqual([3]);
-      expect(result.total).toBe((3 + 5) * 2);
+      expect(result.total).toBe(3 + 5 * 2); // 13, not 16
     });
 
     test('should multiply the total after keep/drop operations', () => {
@@ -336,7 +336,7 @@ describe('roll', () => {
     });
   });
 
-  describe('compound evaluations (soma/subtracao de dados)', () => {
+  describe('compound evaluations and complex math', () => {
     test('should evaluate sum of multiple dice notations correctly', () => {
       const result = roll('1d1+2d1')[0]; // Determinístico: 1 + 2 = 3
       expect(result.total).toBe(3);
@@ -353,6 +353,26 @@ describe('roll', () => {
       const result = roll('2d1 + 5 - 1d1')[0]; // Determinístico: 2 + 5 - 1 = 6
       expect(result.total).toBe(6);
       expect(result.rolls).toEqual([1, 1, 1]);
+    });
+
+    test('should support parentheses around dice', () => {
+      const result = roll('(1d1) + (2d1)')[0]; // Determinístico: 1 + 2 = 3
+      expect(result.total).toBe(3);
+      expect(result.rolls).toEqual([1, 1, 1]);
+    });
+
+    test('should support math order of operations (PEMDAS)', () => {
+      const result = roll('2d1 + 5 * 2')[0]; // 2 + 10 = 12
+      expect(result.total).toBe(12);
+    });
+
+    test('should support complex parentheses math', () => {
+      const result = roll('(2d1 + 5) * 2')[0]; // (2 + 5) * 2 = 14
+      expect(result.total).toBe(14);
+    });
+
+    test('should throw error on invalid math expressions', () => {
+      expect(() => roll('1d20 + abc')).toThrow('Invalid mathematical expression');
     });
   });
 });

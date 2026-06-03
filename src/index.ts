@@ -24,48 +24,41 @@ export function roll(notation: string): RollResult[] {
 }
 
 /**
- * Evaluates a roll expression, supporting compound expressions (e.g. "1d10 + 2d6 + 5").
+ * Evaluates a roll expression, supporting compound expressions and mathematical operations (e.g. "(1d10 + 2d6) * 5").
  */
 function evaluateRollExpression(notation: string): RollResult {
-  // Regex to check if there are multiple dice notations in the expression
-  const diceCount = (notation.match(/\d+d\d+/gi) || []).length;
-  
-  if (diceCount <= 1) {
-    // Maintain backward compatibility for single-term rolls (which may have modifiers/multipliers at the end)
-    return evaluateSingleRoll(notation);
+  if (!notation || notation.trim() === '') {
+    return { notation, total: 0, rolls: [] };
   }
 
-  // Parse compound terms: matching signs (+/-) followed by a dice notation or a plain number
-  const termRegex = /([+-]?)\s*(\d+d\d+[^\s+-]*|\d+)/gi;
-  let match;
-  let total = 0;
+  // Regex para extrair notações puras de dados, sem modificadores trailing como +5 ou *2
+  const diceRegex = /(\d+d\d+(?:r(?:[<>=]=?)?\d+(?:L\d+)?)?(?:!(?:[<>=]=?)?\d*(?:L\d+)?)?(?:(?:kh|kl|dh|dl)\d+)?)/gi;
+
   const allRolls: number[] = [];
+  
+  // Substitui cada ocorrência de dado pelo seu total resolvido
+  const evaluatedNotation = notation.replace(diceRegex, (match) => {
+    const subResult = evaluateSingleRoll(match);
+    allRolls.push(...subResult.rolls);
+    return subResult.total.toString();
+  });
 
-  while ((match = termRegex.exec(notation)) !== null) {
-    const sign = match[1] || '+';
-    const term = match[2];
+  // Validação de segurança: apenas números, espaços e operadores matemáticos básicos
+  const sanitized = evaluatedNotation.replace(/[\d\s\+\-\*\/\(\)\.]/g, '');
+  if (sanitized.trim().length > 0) {
+    throw new Error(`Invalid mathematical expression after dice substitution: "${notation}"`);
+  }
 
-    if (term.includes('d')) {
-      const subResult = evaluateSingleRoll(term);
-      if (sign === '-') {
-        total -= subResult.total;
-      } else {
-        total += subResult.total;
-      }
-      allRolls.push(...subResult.rolls);
-    } else {
-      const val = parseInt(term, 10);
-      if (sign === '-') {
-        total -= val;
-      } else {
-        total += val;
-      }
-    }
+  let finalTotal = 0;
+  try {
+    finalTotal = new Function(`return ${evaluatedNotation}`)();
+  } catch (err) {
+    throw new Error(`Failed to evaluate mathematical expression: "${notation}"`);
   }
 
   return {
     notation: notation,
-    total: total,
+    total: finalTotal,
     rolls: allRolls
   };
 }
